@@ -1,0 +1,5 @@
+{
+  "name": "文档转换 & JSON 助手",
+  "description": "基于 Gemini AI 的多功能文档转换工具，支持 PDF、Word、Markdown 和文本互转，内置智能 JSON 格式化与校验工具。",
+  "requestFramePermissions": []
+}
