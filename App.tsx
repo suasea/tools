@@ -20,7 +20,7 @@ const App: React.FC = () => {
                   <span className="text-white font-bold text-lg">D</span>
                 </div>
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-                  DocuMorph
+                  工具大全
                 </span>
               </div>
               <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
@@ -158,7 +158,7 @@ const App: React.FC = () => {
        <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <p className="text-center text-xs text-gray-400">
-            &copy; 2024 DocuMorph. 文件不会上传至服务器保存，所有处理均通过 Google Gemini API 进行。
+            &copy; 2025 工具大全. 文件不会上传至服务器保存，所有处理均通过 Google Gemini API 进行。
           </p>
         </div>
       </footer>
