@@ -9,7 +9,8 @@ export enum DocFormat {
 export enum AppView {
   CONVERTER = 'converter',
   JSON_TOOLS = 'json_tools',
-  IMAGE_TOOLS = 'image_tools'
+  IMAGE_TOOLS = 'image_tools',
+  PHOTO_STUDIO = 'photo_studio'
 }
 
 export interface FileData {

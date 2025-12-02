@@ -3,6 +3,7 @@ import { AppView } from './types';
 import { ConverterView } from './components/ConverterView';
 import { JsonTools } from './components/JsonTools';
 import { ImageToolsView } from './components/ImageToolsView';
+import { PhotoStudioView } from './components/PhotoStudioView';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.CONVERTER);
@@ -42,6 +43,15 @@ const App: React.FC = () => {
                   图片工具
                 </button>
                 <button
+                  onClick={() => setCurrentView(AppView.PHOTO_STUDIO)}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full transition-colors
+                    ${currentView === AppView.PHOTO_STUDIO 
+                      ? 'border-primary-500 text-gray-900' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                >
+                  AI 写真馆
+                </button>
+                <button
                   onClick={() => setCurrentView(AppView.JSON_TOOLS)}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full transition-colors
                     ${currentView === AppView.JSON_TOOLS 
@@ -59,24 +69,31 @@ const App: React.FC = () => {
         </div>
         
         {/* Mobile menu (simple implementation) */}
-        <div className="sm:hidden flex border-t border-gray-100">
+        <div className="sm:hidden flex border-t border-gray-100 overflow-x-auto">
             <button
               onClick={() => setCurrentView(AppView.CONVERTER)}
-              className={`flex-1 py-3 text-center text-sm font-medium
+              className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
                 ${currentView === AppView.CONVERTER ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
             >
               文档
             </button>
             <button
               onClick={() => setCurrentView(AppView.IMAGE_TOOLS)}
-              className={`flex-1 py-3 text-center text-sm font-medium
+              className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
                 ${currentView === AppView.IMAGE_TOOLS ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
             >
               图片
             </button>
             <button
+              onClick={() => setCurrentView(AppView.PHOTO_STUDIO)}
+              className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
+                ${currentView === AppView.PHOTO_STUDIO ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
+            >
+              写真馆
+            </button>
+            <button
               onClick={() => setCurrentView(AppView.JSON_TOOLS)}
-              className={`flex-1 py-3 text-center text-sm font-medium
+              className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
                 ${currentView === AppView.JSON_TOOLS ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
             >
               JSON
@@ -107,6 +124,18 @@ const App: React.FC = () => {
                 </div>
                 <div className="h-[calc(100%-5rem)]">
                     <ImageToolsView />
+                </div>
+            </div>
+          )}
+
+          {currentView === AppView.PHOTO_STUDIO && (
+            <div className="h-full animate-fade-in-up">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">AI 写真馆</h1>
+                    <p className="text-gray-500">上传一张照片，AI 为您生成 6 组不同风格的专业级写真。</p>
+                </div>
+                <div className="h-[calc(100%-5rem)]">
+                    <PhotoStudioView />
                 </div>
             </div>
           )}

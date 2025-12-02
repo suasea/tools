@@ -156,3 +156,109 @@ export const processImage = async (
     throw new Error("图片处理失败，请重试或检查图片格式。");
   }
 };
+
+export interface PortraitStyle {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
+export const PORTRAIT_STYLES: PortraitStyle[] = [
+  { 
+    id: 'professional', 
+    name: '职业肖像照', 
+    prompt: 'Generate a high-quality professional business headshot of this person. They should be wearing professional business attire (suit or blazer). Background should be a neutral, clean studio backdrop. Soft, professional lighting. Preserve the facial features and identity of the person in the input image.' 
+  },
+  { 
+    id: 'fashion', 
+    name: '时尚写真', 
+    prompt: 'Generate a high-fashion editorial photo of this person. Trendy, stylish outfit. Dramatic lighting, confident pose. The background should be abstract or minimal but chic. Vogue magazine style. Preserve facial features.' 
+  },
+  { 
+    id: 'gallery', 
+    name: '美术馆迷失的她', 
+    prompt: 'Generate an artistic photo of this person in a modern art gallery. They are looking at a large abstract painting or standing in a spacious gallery hall. Soft, ambient lighting. The mood is contemplative, dreamy, and atmospheric ("Lost in the gallery"). Preserve facial features.' 
+  },
+  { 
+    id: 'bw_art', 
+    name: '黑白艺术照', 
+    prompt: 'Generate a stunning Black and White artistic portrait of this person. High contrast, dramatic shadows and highlights. Classic photography style, emotional and expressive. Focus on texture and form. Preserve facial features.' 
+  },
+  { 
+    id: 'magazine', 
+    name: '美式杂志封面', 
+    prompt: 'Generate a vibrant American magazine cover style portrait of this person. Bold colors, sharp focus, celebrity interview style. The subject looks engaging and charismatic. High-end retouching feel. Preserve facial features.' 
+  },
+  { 
+    id: 'cinematic', 
+    name: '电影肖像', 
+    prompt: 'Generate a cinematic close-up portrait of this person. Shallow depth of field (bokeh background). Teal and orange color grading or dramatic mood lighting. It should look like a still frame from a high-budget movie. Preserve facial features.' 
+  }
+];
+
+export interface PortraitResult {
+  styleId: string;
+  image: string | null; // Base64
+  error?: string;
+}
+
+/**
+ * Generates a series of 6 portraits based on one input image.
+ */
+export const generatePortraitSeries = async (
+  base64Data: string,
+  mimeType: string,
+): Promise<PortraitResult[]> => {
+  const ai = getClient();
+  const model = 'gemini-2.5-flash-image';
+
+  // Create an array of promises to run in parallel
+  const promises = PORTRAIT_STYLES.map(async (style) => {
+    try {
+      const response = await ai.models.generateContent({
+        model: model,
+        contents: {
+          parts: [
+            {
+              inlineData: {
+                mimeType: mimeType,
+                data: base64Data
+              }
+            },
+            { text: style.prompt }
+          ]
+        }
+      });
+
+      // Extract image
+      const parts = response.candidates?.[0]?.content?.parts;
+      let imageBase64 = null;
+      
+      if (parts) {
+        for (const part of parts) {
+          if (part.inlineData && part.inlineData.data) {
+            imageBase64 = part.inlineData.data;
+            break;
+          }
+        }
+      }
+
+      if (!imageBase64) throw new Error("No image returned");
+
+      return {
+        styleId: style.id,
+        image: imageBase64
+      };
+
+    } catch (err) {
+      console.error(`Failed to generate ${style.name}:`, err);
+      return {
+        styleId: style.id,
+        image: null,
+        error: "生成失败"
+      };
+    }
+  });
+
+  return Promise.all(promises);
+};
