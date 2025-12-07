@@ -1,3 +1,4 @@
+
 export enum DocFormat {
   TXT = 'txt',
   MD = 'md',
@@ -10,7 +11,9 @@ export enum AppView {
   CONVERTER = 'converter',
   JSON_TOOLS = 'json_tools',
   IMAGE_TOOLS = 'image_tools',
-  PHOTO_STUDIO = 'photo_studio'
+  PHOTO_STUDIO = 'photo_studio',
+  HAND_TRACKING = 'hand_tracking',
+  DRAWING_BOARD = 'drawing_board'
 }
 
 export interface FileData {

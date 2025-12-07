@@ -1,9 +1,12 @@
+
 import React, { useState } from 'react';
 import { AppView } from './types';
 import { ConverterView } from './components/ConverterView';
 import { JsonTools } from './components/JsonTools';
 import { ImageToolsView } from './components/ImageToolsView';
 import { PhotoStudioView } from './components/PhotoStudioView';
+import { HandTrackingView } from './components/HandTrackingView';
+import { DrawingBoardView } from './components/DrawingBoardView';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.CONVERTER);
@@ -52,6 +55,24 @@ const App: React.FC = () => {
                   AI 写真馆
                 </button>
                 <button
+                  onClick={() => setCurrentView(AppView.HAND_TRACKING)}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full transition-colors
+                    ${currentView === AppView.HAND_TRACKING 
+                      ? 'border-primary-500 text-gray-900' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                >
+                  手部追踪
+                </button>
+                <button
+                  onClick={() => setCurrentView(AppView.DRAWING_BOARD)}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full transition-colors
+                    ${currentView === AppView.DRAWING_BOARD 
+                      ? 'border-primary-500 text-gray-900' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                >
+                  AI 魔法画板
+                </button>
+                <button
                   onClick={() => setCurrentView(AppView.JSON_TOOLS)}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full transition-colors
                     ${currentView === AppView.JSON_TOOLS 
@@ -89,7 +110,21 @@ const App: React.FC = () => {
               className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
                 ${currentView === AppView.PHOTO_STUDIO ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
             >
-              写真馆
+              写真
+            </button>
+            <button
+              onClick={() => setCurrentView(AppView.HAND_TRACKING)}
+              className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
+                ${currentView === AppView.HAND_TRACKING ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
+            >
+              追踪
+            </button>
+             <button
+              onClick={() => setCurrentView(AppView.DRAWING_BOARD)}
+              className={`flex-1 py-3 px-2 text-center text-sm font-medium whitespace-nowrap
+                ${currentView === AppView.DRAWING_BOARD ? 'text-primary-600 bg-primary-50' : 'text-gray-500'}`}
+            >
+              画板
             </button>
             <button
               onClick={() => setCurrentView(AppView.JSON_TOOLS)}
@@ -140,6 +175,18 @@ const App: React.FC = () => {
             </div>
           )}
 
+          {currentView === AppView.HAND_TRACKING && (
+            <div className="h-full animate-fade-in-up">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">AI 手部追踪</h1>
+                    <p className="text-gray-500">实时手势捕捉与粒子交互可视化体验。</p>
+                </div>
+                <div className="h-[calc(100%-5rem)]">
+                    <HandTrackingView />
+                </div>
+            </div>
+          )}
+
           {currentView === AppView.JSON_TOOLS && (
             <div className="h-full animate-fade-in-up">
                  <div className="mb-6">
@@ -153,6 +200,11 @@ const App: React.FC = () => {
           )}
         </div>
       </main>
+
+      {/* Full Screen Overlay for Drawing Board */}
+      {currentView === AppView.DRAWING_BOARD && (
+          <DrawingBoardView onClose={() => setCurrentView(AppView.HAND_TRACKING)} />
+      )}
       
       {/* Footer */}
        <footer className="bg-white border-t border-gray-200 mt-auto">

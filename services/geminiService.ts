@@ -116,11 +116,11 @@ export const processImage = async (
   let prompt = "";
   
   if (mode === 'remove') {
-    prompt = "Remove all watermarks, logos, text overlays, and timestamps from this image. Reconstruct the background behind them to look completely natural and seamless. The output should be a clean original version of the image.";
+    prompt = "Remove all watermarks, logos, text overlays, and timestamps from this image. Reconstruct the background behind them to look completely natural and seamless. The output should be a clean original version of the image. Return the processed image.";
   } else {
     // Add watermark/logo mode
     const text = watermarkText || 'AI Watermark';
-    prompt = `Add a stylish, semi-transparent watermark to this image. The watermark content should be: "${text}". Place it in the bottom-right corner. Ensure it is visible but does not obscure the main subject. Maintain the original image resolution and quality.`;
+    prompt = `Add a stylish, semi-transparent watermark to this image. The watermark content should be: "${text}". Place it in the bottom-right corner. Ensure it is visible but does not obscure the main subject. Maintain the original image resolution and quality. Return the processed image.`;
   }
 
   try {
@@ -141,19 +141,32 @@ export const processImage = async (
 
     // Check for image in response
     const parts = response.candidates?.[0]?.content?.parts;
+    let textResponse = "";
+
     if (parts) {
       for (const part of parts) {
         if (part.inlineData && part.inlineData.data) {
           return part.inlineData.data;
         }
+        if (part.text) {
+          textResponse += part.text;
+        }
       }
     }
+    
+    // If we have text but no image, likely a refusal or error
+    if (textResponse) {
+      throw new Error(`AI 未生成图片，回应: ${textResponse}`);
+    }
 
-    throw new Error("模型未返回图像数据");
+    throw new Error("模型未返回图像数据，也未提供文本解释。");
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Image processing failed:", error);
-    throw new Error("图片处理失败，请重试或检查图片格式。");
+    if (error.message && (error.message.includes("AI") || error.message.includes("模型"))) {
+        throw error;
+    }
+    throw new Error("图片处理失败: " + error.message);
   }
 };
 
@@ -233,6 +246,7 @@ export const generatePortraitSeries = async (
       // Extract image
       const parts = response.candidates?.[0]?.content?.parts;
       let imageBase64 = null;
+      let textOutput = "";
       
       if (parts) {
         for (const part of parts) {
@@ -240,22 +254,25 @@ export const generatePortraitSeries = async (
             imageBase64 = part.inlineData.data;
             break;
           }
+          if (part.text) {
+             textOutput += part.text;
+          }
         }
       }
 
-      if (!imageBase64) throw new Error("No image returned");
+      if (!imageBase64) throw new Error(textOutput || "No image returned");
 
       return {
         styleId: style.id,
         image: imageBase64
       };
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Failed to generate ${style.name}:`, err);
       return {
         styleId: style.id,
         image: null,
-        error: "生成失败"
+        error: err.message || "生成失败"
       };
     }
   });
